@@ -38,7 +38,7 @@ namespace LinkedList
         }
         public LinkedList(T[] values)
         {
-            if (values is null) throw new Exception("The LinkedList is null");
+            if (values is null) throw new Exception("The array is null");
             Length = values.Length;
             if (values.Length != 0)
             {
