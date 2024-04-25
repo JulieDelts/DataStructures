@@ -6,7 +6,7 @@ namespace LinkedList
 {
     internal class LinkedList<T> where T : notnull, IComparable<T>, IEquatable<T>
     {
-        public int Length { get; private set; }
+        public int Length { get; private set; } = 0;
         private Node<T>? _root;
         private Node<T>? _tail;
 
@@ -38,7 +38,6 @@ namespace LinkedList
         }
         public LinkedList(T[] values)
         {
-            if (values is null) throw new Exception("The array is null");
             Length = values.Length;
             if (values.Length != 0)
             {
@@ -60,35 +59,36 @@ namespace LinkedList
 
         public int GetFirstIndexByValue(T value)
         {
-            if (this is null || Length == 0) throw new Exception("The LinkedList is null or empty");
-            Node<T> current = _root!;
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
+
+            Node<T> current = _root;
             int neededIndex = -1;
-            for (int i = 0; i < Length; i++)
+            for (int i = 0; i < Length && current.Next is not null; i++)
             {
-                if (current!.Value.CompareTo(value) == 0)
+                if (current.Value.CompareTo(value) == 0)
                 {
                     neededIndex = i;
                     break;
                 }
+                current = current.Next;
 
-                current = current.Next!;
             }
             return neededIndex;
         }
         public T GetMaxValue()
         {
-            if (this is null || Length == 0) throw new Exception("The LinkedList is null or empty");
-            Node<T> current = _root!;
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
+
+            Node<T> current = _root;
             T maxValue = current.Value;
-            for (int i = 0; i < Length; i++)
+            while (current.Next is not null)
             {
-                if (current!.Value.CompareTo(maxValue) == 1)
+                if (current.Value.CompareTo(maxValue) == 1)
                 {
                     maxValue = current.Value;
 
                 }
-
-                current = current.Next!;
+                current = current.Next;
             }
             return maxValue;
 
@@ -101,18 +101,18 @@ namespace LinkedList
         }
         public T GetMinValue()
         {
-            if (this is null || this.Length == 0) throw new Exception("The LinkedList is null or empty");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
 
-            Node<T> current = _root!;
+            Node<T> current = _root;
             T minValue = current.Value;
-            for (int i = 0; i < Length; i++)
+            while (current.Next is not null)
             {
-                if (current!.Value.CompareTo(minValue) == -1)
+                if (current.Value.CompareTo(minValue) == -1)
                 {
                     minValue = current.Value;
                 }
 
-                current = current.Next!;
+                current = current.Next;
             }
             return minValue;
         }
@@ -124,7 +124,7 @@ namespace LinkedList
         }
         public void Add(T value)
         {
-            if (this is null) throw new Exception("The LinkedList is null");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
 
             if (Length == 0)
             {
@@ -135,13 +135,14 @@ namespace LinkedList
             else
             {
                 Length++;
-                _tail!.Next = new Node<T>(value);
+                _tail.Next = new Node<T>(value);
                 _tail = _tail.Next;
             }
         }
         public void Add(LinkedList<T> list)
         {
-            if (this is null || list is null || list.Length == 0) throw new Exception("The LinkedList is null or empty");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
+            if (list._root is null || list._tail is null) throw new Exception("The LinkedListToInsert is empty");
 
             if (Length == 0)
             {
@@ -150,14 +151,14 @@ namespace LinkedList
             }
             else
             {
-                _tail!.Next = list._root;
+                _tail.Next = list._root;
                 _tail = list._tail;
             }
             Length += list.Length;
         }
         public void InsertAtBeginning(T value)
         {
-            if (this is null) throw new Exception("The LinkedList is null");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
 
             if (Length == 0)
             {
@@ -175,7 +176,8 @@ namespace LinkedList
         }
         public void InsertAtBeginning(LinkedList<T> list)
         {
-            if (this is null || list is null || list.Length == 0) throw new Exception("The LinkedList is null or empty");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
+            if (list._root is null || list._tail is null) throw new Exception("The LinkedListToInsert is empty");
 
             if (Length == 0)
             {
@@ -184,14 +186,14 @@ namespace LinkedList
             }
             else
             {
-                list._tail!.Next = _root;
+                list._tail.Next = _root;
                 _root = list._root;
             }
             Length += list.Length;
         }
         public void InsertByIndex(int index, T value)
         {
-            if (this is null) throw new Exception("The LinkedList is null");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
             if (index < 0 || index >= Length) throw new IndexOutOfRangeException();
 
             if (index == 0)
@@ -213,7 +215,8 @@ namespace LinkedList
         }
         public void InsertByIndex(int index, LinkedList<T> list)
         {
-            if (this is null || list is null || list.Length == 0) throw new Exception("The LinkedList is null or empty");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
+            if (list._root is null || list._tail is null) throw new Exception("The LinkedListToInsert is empty");
             if (index < 0 || index >= Length) throw new IndexOutOfRangeException();
 
             if (index == 0)
@@ -222,15 +225,19 @@ namespace LinkedList
             }
             else if (index == (Length - 1))
             {
-                InsertAtBeginning(list);
+                Add(list);
             }
             else
             {
                 Node<T> current = GetNodeByIndex(index - 1);
-                Node<T> tmp = current.Next!;
-                current.Next = list._root;
-                list._tail!.Next = tmp;
-                Length += list.Length;
+                if (current.Next is not null)
+                {
+                    Node<T> tmp = current.Next;
+                    current.Next = list._root;
+                    list._tail.Next = tmp;
+                    Length += list.Length;
+                }
+                else throw new Exception();
             }
 
         }
@@ -242,7 +249,7 @@ namespace LinkedList
         }
         public void RemoveFirstElement()
         {
-            if (this is null || Length == 0) throw new Exception("The LinkedList is null or empty");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
 
             if (Length == 1)
             {
@@ -250,13 +257,13 @@ namespace LinkedList
             }
             else
             {
-                _root = _root!.Next;
+                _root = _root.Next;
                 Length--;
             }
         }
         public void RemoveLastElement()
         {
-            if (this is null || Length == 0) throw new Exception("The LinkedList is null or empty");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
             if (Length == 1)
             {
                 Clear();
@@ -271,7 +278,7 @@ namespace LinkedList
         }
         public void RemoveByIndex(int index)
         {
-            if (this is null || Length == 0) throw new Exception("The LinkedList is null or empty");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
             if (index < 0 || index >= Length) throw new IndexOutOfRangeException();
 
             if (index == 0)
@@ -285,13 +292,17 @@ namespace LinkedList
             else
             {
                 Node<T> current = GetNodeByIndex(index - 1);
-                current.Next = current.Next!.Next;
-                Length--;
+                if (current.Next is not null)
+                {
+                    current.Next = current.Next.Next;
+                    Length--;
+                }
+                else throw new Exception();
             }
         }
         public void RemoveNumberOfFirstElements(int number)
         {
-            if (this is null || Length == 0) throw new Exception("The LinkedList is null or empty");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
             if (Length < number) throw new IndexOutOfRangeException();
             else if (Length == number)
             {
@@ -307,7 +318,7 @@ namespace LinkedList
         }
         public void RemoveNumberOfLastElements(int number)
         {
-            if (this is null || Length == 0) throw new Exception("The LinkedList is null or empty");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
             if (Length < number) throw new IndexOutOfRangeException();
             else if (Length == number)
             {
@@ -323,7 +334,7 @@ namespace LinkedList
         }
         public void RemoveNumberOfElementsByIndex(int index, int number)
         {
-            if (this is null || Length == 0) throw new Exception("The LinkedList is null or empty");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
             if (index < 0 || index >= Length || Length < number) throw new IndexOutOfRangeException();
             else if (Length == number)
             {
@@ -350,13 +361,13 @@ namespace LinkedList
         }
         public void RemoveFirstElementByValue(T value)
         {
-            if (this is null || Length == 0) throw new Exception("The LinkedList is null or empty");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
             int index = GetFirstIndexByValue(value);
             RemoveByIndex(index);
         }
         public void RemoveAllElementsByValue(T value)
         {
-            if (this is null || Length == 0) throw new Exception("The LinkedList is null or empty");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
             bool check = true;
             while (check == true)
             {
@@ -373,11 +384,11 @@ namespace LinkedList
         }
         public void Reverse()
         {
-            if (this is null) throw new Exception("The LinkedList is null");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
             if (Length == 0) return;
             else
             {
-                Node<T> current = _root!;
+                Node<T> current = _root;
                 while (current.Next is not null)
                 {
                     Node<T> tmp = current.Next;
@@ -390,24 +401,34 @@ namespace LinkedList
         }
         public void MergeSort(bool desc = false)
         {
-            if (this is null) throw new Exception("The LinkedList is null");
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
 
             if (Length == 0) return;
             else
             {
-                Node<T> current = _root!;
+                Node<T> current = _root;
                 _root = MergeSortUtil(current, desc);
-                Node<T> newTail = _root;
-                while (newTail.Next is not null) newTail = newTail.Next;
-                _tail = newTail;
+                if (_root is not null)
+                {
+                    Node<T> newTail = _root;
+                    while (newTail.Next is not null)
+                    {
+                        newTail = newTail.Next;
+                    }
+                    _tail = newTail;
+                }
+                else throw new Exception();
             }
+
         }
 
         public override string ToString()
         {
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
+
             if (Length != 0)
             {
-                Node<T> current = _root!;
+                Node<T> current = _root;
                 StringBuilder s = new StringBuilder(current.Value + " ");
                 while (current.Next is not null)
                 {
@@ -424,19 +445,20 @@ namespace LinkedList
         }
         public override bool Equals(object? obj)
         {
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
             LinkedList<T>? list = obj as LinkedList<T>;
-            if (this is null || list is null) return false;
+            if (list is null || list._root is null || list._tail is null) return false;
             if (Length != list.Length) return false;
             if (Length == 1 && list.Length == 1)
             {
                 if (this[0].Equals(list[0])) return true;
                 else return false;
             }
-            Node<T>? currentThis = _root!;
-            Node<T>? currentList = list._root!;
-            while (currentThis.Next is not null)
+            Node<T>? currentThis = _root;
+            Node<T>? currentList = list._root;
+            while (currentThis.Next is not null && currentList.Next is not null)
             {
-                if (!currentThis.Value.Equals(currentList!.Value))
+                if (!currentThis.Value.Equals(currentList.Value))
                 {
                     return false;
                 }
@@ -453,40 +475,39 @@ namespace LinkedList
 
         private Node<T> GetNodeByIndex(int index)
         {
-            if (this is null || Length == 0) throw new Exception("The LinkedList is empty");
-            if (index < 0 || index > Length) throw new IndexOutOfRangeException();
+            if (_root is null || _tail is null) throw new Exception("The LinkedList is empty");
+            if (index < 0 || index >= Length) throw new IndexOutOfRangeException();
 
-            Node<T> current = _root!;
-            for (int i = 1; i <= index; i++)
+            Node<T> current = _root;
+            for (int i = 1; i <= index && current.Next is not null; i++)
             {
-                current = current.Next!;
+                current = current.Next;
             }
             return current;
         }
-        private Node<T> MergeSortUtil(Node<T> root, bool desc)
+        private Node<T>? MergeSortUtil(Node<T>? root, bool desc)
         {
-            if (root is null || root.Next is null)
-            {
-                return root;
-            }
+            if (root is null || root.Next is null) return root;
             Node<T> middle = GetMiddleNode(root);
-            Node<T> nextToMiddle = middle.Next!;
+            if (middle.Next is null) throw new Exception();
+            Node<T> nextToMiddle = middle.Next;
             middle.Next = null;
-            Node<T> left = MergeSortUtil(root, desc);
-            Node<T> right = MergeSortUtil(nextToMiddle, desc);
-            Node<T> sortedlist = Merge(left, right, desc);
-            return sortedlist;
+            Node<T>? left = MergeSortUtil(root, desc);
+            Node<T>? right = MergeSortUtil(nextToMiddle, desc);
+            if (left is null || right is null) throw new Exception();
+            Node<T> sortedList;
+            sortedList = Merge(left, right, desc);
+            return sortedList;
         }
         private Node<T> GetMiddleNode(Node<T> root)
         {
-            if (root is null) return root;
-            Node<T> fastptr = root.Next;
-            Node<T> slowptr = root;
+            Node<T>? fastptr = root.Next;
+            Node<T>? slowptr = root;
 
             while (fastptr is not null)
             {
                 fastptr = fastptr.Next;
-                if (fastptr is not null)
+                if (fastptr is not null && slowptr.Next is not null)
                 {
                     slowptr = slowptr.Next;
                     fastptr = fastptr.Next;
@@ -494,44 +515,50 @@ namespace LinkedList
             }
             return slowptr;
         }
-        private Node<T> Merge(Node<T> a, Node<T> b, bool desc)
+        private Node<T> Merge(Node<T>? a, Node<T>? b, bool desc)
         {
-            Node<T> result;
-            if (a is null)
+            if (a is null && b is not null)
                 return b;
-            if (b is null)
+            else if (b is null && a is not null)
                 return a;
-            if (desc == false)
+            else if (a is not null && b is not null)
             {
-                if (a.Value.CompareTo(b.Value) == -1 || a.Value.CompareTo(b.Value) == 0)
+                Node<T> result;
+                if (desc == false)
                 {
-                    result = a;
+                    if (a.Value.CompareTo(b.Value) == -1 || a.Value.CompareTo(b.Value) == 0)
+                    {
+                        result = a;
 
-                    result.Next = Merge(a.Next, b, desc);
+                        result.Next = Merge(a?.Next, b, desc);
+                    }
+                    else
+                    {
+                        result = b;
+                        result.Next = Merge(a, b.Next, desc);
+                    }
                 }
                 else
                 {
-                    result = b;
-                    result.Next = Merge(a, b.Next, desc);
-                }
-            }
-            else
-            {
-                if (a.Value.CompareTo(b.Value) == 1)
-                {
-                    result = a;
+                    if (a.Value.CompareTo(b.Value) == 1)
+                    {
+                        result = a;
 
-                    result.Next = Merge(a.Next, b, desc);
-                }
-                else
-                {
-                    result = b;
-                    result.Next = Merge(a, b.Next, desc);
-                }
-            }
+                        result.Next = Merge(a.Next, b, desc);
+                    }
+                    else
+                    {
+                        result = b;
+                        result.Next = Merge(a, b.Next, desc);
+                    }
 
-            return result;
+                }
+                return result;
+            }
+            else throw new Exception();
+
         }
+
+
     }
 }
-
