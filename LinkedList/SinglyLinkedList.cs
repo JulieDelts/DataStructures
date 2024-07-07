@@ -699,50 +699,54 @@ namespace LinkedList
             return slowPointer;
         }
 
-        private SinglyLinkedNode<T> Merge(SinglyLinkedNode<T>? a, SinglyLinkedNode<T>? b, bool desc)
+        private SinglyLinkedNode<T> Merge(SinglyLinkedNode<T>? firstPart, SinglyLinkedNode<T>? secondPart, bool desc)
         {
-            if (a is null && b is not null)
-                return b;
-            else if (b is null && a is not null)
-                return a;
-            else if (a is not null && b is not null)
+            if (firstPart is null && secondPart is not null)
+            {
+                return secondPart;
+            }
+            else if (secondPart is null && firstPart is not null)
+            {
+                return firstPart;
+            }
+            else if (firstPart is not null && secondPart is not null)
             {
                 SinglyLinkedNode<T> result;
+
                 if (desc == false)
                 {
-                    if (a.Value.CompareTo(b.Value) == -1 || a.Value.CompareTo(b.Value) == 0)
+                    if (firstPart.Value.CompareTo(secondPart.Value) == -1 || firstPart.Value.CompareTo(secondPart.Value) == 0)
                     {
-                        result = a;
-
-                        result.Next = Merge(a?.Next, b, desc);
+                        result = firstPart;
+                        result.Next = Merge(firstPart.Next, secondPart, desc);
                     }
                     else
                     {
-                        result = b;
-                        result.Next = Merge(a, b.Next, desc);
+                        result = secondPart;
+                        result.Next = Merge(firstPart, secondPart.Next, desc);
                     }
                 }
                 else
                 {
-                    if (a.Value.CompareTo(b.Value) == 1)
+                    if (firstPart.Value.CompareTo(secondPart.Value) == 1)
                     {
-                        result = a;
+                        result = firstPart;
 
-                        result.Next = Merge(a.Next, b, desc);
+                        result.Next = Merge(firstPart.Next, secondPart, desc);
                     }
                     else
                     {
-                        result = b;
-                        result.Next = Merge(a, b.Next, desc);
+                        result = secondPart;
+                        result.Next = Merge(firstPart, secondPart.Next, desc);
                     }
 
                 }
                 return result;
             }
-            else throw new Exception();
-
+            else
+            {
+                throw new Exception();
+            }
         }
-
-
     }
 }
