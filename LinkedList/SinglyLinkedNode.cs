@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LinkedList
+namespace SinglyLinkedList
 {
     public class SinglyLinkedNode<T> where T : notnull, IComparable<T>, IEquatable<T>
     {

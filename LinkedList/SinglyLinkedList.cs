@@ -1,14 +1,14 @@
 ﻿using System.Text;
 
-namespace LinkedList
+namespace SinglyLinkedList
 {
     public class SinglyLinkedList<T> where T : notnull, IComparable<T>, IEquatable<T>
     {
         public int Length { get; private set; }
 
-        public SinglyLinkedNode<T>? Root { get; internal set; }
+        private SinglyLinkedNode<T>? _root;
 
-        public SinglyLinkedNode<T>? Tail { get; internal set; }
+        private SinglyLinkedNode<T>? _tail;
 
         public T this[int index]
         {
@@ -27,8 +27,8 @@ namespace LinkedList
         public SinglyLinkedList(T value)
         {
             Length = 1;
-            Root = new SinglyLinkedNode<T>(value);
-            Tail = Root;
+            _root = new SinglyLinkedNode<T>(value);
+            _tail = _root;
         }
 
         public SinglyLinkedList(T[] values)
@@ -40,29 +40,29 @@ namespace LinkedList
 
             Length = values.Length;
 
-            Root = new SinglyLinkedNode<T>(values[0]);
-            Tail = Root;
+            _root = new SinglyLinkedNode<T>(values[0]);
+            _tail = _root;
 
             for (int i = 1; i < values.Length; i++)
             {
-                Tail.Next = new SinglyLinkedNode<T>(values[i]);
-                Tail = Tail.Next;
+                _tail.Next = new SinglyLinkedNode<T>(values[i]);
+                _tail = _tail.Next;
             }
         }
 
         public int GetIndexByValue(T value)
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            SinglyLinkedNode<T> current = Root;
+            SinglyLinkedNode<T> current = _root;
             int neededIndex = -1;
 
             for (int i = 0; i < Length && current.Next is not null; i++)
@@ -81,17 +81,17 @@ namespace LinkedList
 
         public T GetMaxValue()
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            SinglyLinkedNode<T> current = Root;
+            SinglyLinkedNode<T> current = _root;
             T maxValue = current.Value;
 
             while (current.Next is not null)
@@ -116,17 +116,17 @@ namespace LinkedList
 
         public T GetMinValue()
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            SinglyLinkedNode<T> current = Root;
+            SinglyLinkedNode<T> current = _root;
             T minValue = current.Value;
 
             while (current.Next is not null)
@@ -151,12 +151,12 @@ namespace LinkedList
 
         public void Add(T value)
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
@@ -164,48 +164,48 @@ namespace LinkedList
             if (Length == 0)
             {
                 Length++;
-                Root = new SinglyLinkedNode<T>(value);
-                Tail = Root;
+                _root = new SinglyLinkedNode<T>(value);
+                _tail = _root;
             }
             else
             {
                 Length++;
-                Tail.Next = new SinglyLinkedNode<T>(value);
-                Tail = Tail.Next;
+                _tail.Next = new SinglyLinkedNode<T>(value);
+                _tail = _tail.Next;
             }
         }
 
         public void Add(SinglyLinkedList<T> list)
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (list.Root is null)
+            if (list._root is null)
             {
                 throw new ArgumentException("The SinglyLinkedListToInsert is empty");
             }
 
-            if (list.Tail is null)
+            if (list._tail is null)
             {
                 throw new ArgumentException("The SinglyLinkedListToInsert is empty");
             }
 
             if (Length == 0)
             {
-                Root = list.Root;
-                Tail = list.Tail;
+                _root = list._root;
+                _tail = list._tail;
             }
             else
             {
-                Tail.Next = list.Root;
-                Tail = list.Tail;
+                _tail.Next = list._root;
+                _tail = list._tail;
             }
 
             Length += list.Length;
@@ -213,12 +213,12 @@ namespace LinkedList
 
         public void InsertAt(int index, T value)
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
@@ -231,15 +231,15 @@ namespace LinkedList
             if (Length == 0)
             {
                 Length++;
-                Root = new SinglyLinkedNode<T>(value);
-                Tail = Root;
+                _root = new SinglyLinkedNode<T>(value);
+                _tail = _root;
             }
             else if (index == 0)
             {
                 Length++;
                 SinglyLinkedNode<T> tmp = new SinglyLinkedNode<T>(value);
-                tmp.Next = Root;
-                Root = tmp;
+                tmp.Next = _root;
+                _root = tmp;
             }
             else if (index == (Length - 1))
             {
@@ -257,22 +257,22 @@ namespace LinkedList
 
         public void InsertAt(int index, SinglyLinkedList<T> list)
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (list.Root is null)
+            if (list._root is null)
             {
                 throw new ArgumentException("The SinglyLinkedListToInsert is empty");
             }
 
-            if (list.Tail is null)
+            if (list._tail is null)
             {
                 throw new ArgumentException("The SinglyLinkedListToInsert is empty");
             }
@@ -284,14 +284,14 @@ namespace LinkedList
 
             if (Length == 0)
             {
-                Root = list.Root;
-                Tail = list.Tail;
+                _root = list._root;
+                _tail = list._tail;
                 Length += list.Length;
             }
             else if (index == 0)
             {
-                list.Tail.Next = Root;
-                Root = list.Root;
+                list._tail.Next = _root;
+                _root = list._root;
                 Length += list.Length;
             }
             else if (index == (Length - 1))
@@ -305,8 +305,8 @@ namespace LinkedList
                 if (current.Next is not null)
                 {
                     SinglyLinkedNode<T> tmp = current.Next;
-                    current.Next = list.Root;
-                    list.Tail.Next = tmp;
+                    current.Next = list._root;
+                    list._tail.Next = tmp;
                     Length += list.Length;
                 }
                 else
@@ -318,19 +318,19 @@ namespace LinkedList
 
         public void Clear()
         {
-            Root = null;
-            Tail = null;
+            _root = null;
+            _tail = null;
             Length = 0;
         }
 
         public void RemoveAt(int index)
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
@@ -346,14 +346,14 @@ namespace LinkedList
             }
             else if (index == 0)
             {
-                Root = Root.Next;
+                _root = _root.Next;
                 Length--;
             }
             else if (index == Length - 1)
             {
                 SinglyLinkedNode<T> current = GetNodeByIndex(Length - 2);
                 current.Next = null;
-                Tail = current;
+                _tail = current;
                 Length--;
             }
             else
@@ -373,12 +373,12 @@ namespace LinkedList
 
         public void RemoveAt(int index, int number)
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
@@ -399,9 +399,9 @@ namespace LinkedList
             }
             else if (index == 0)
             {
-                for (int i = 0; i < number && Root.Next is not null; i++)
+                for (int i = 0; i < number && _root.Next is not null; i++)
                 {
-                    Root = Root.Next;
+                    _root = _root.Next;
                     Length--;
                 }
             }
@@ -409,7 +409,7 @@ namespace LinkedList
             {
                 SinglyLinkedNode<T> current = GetNodeByIndex(index - 1);
                 current.Next = null;
-                Tail = current;
+                _tail = current;
                 Length -= number;
             }
             else
@@ -423,12 +423,12 @@ namespace LinkedList
 
         public void RemoveByValue(T value)
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
@@ -439,12 +439,12 @@ namespace LinkedList
 
         public void RemoveAllByValue(T value)
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
@@ -468,12 +468,12 @@ namespace LinkedList
 
         public void Reverse()
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
@@ -484,28 +484,28 @@ namespace LinkedList
             }
             else
             {
-                SinglyLinkedNode<T> current = Root;
+                SinglyLinkedNode<T> current = _root;
 
                 while (current.Next is not null)
                 {
                     SinglyLinkedNode<T> tmp = current.Next;
                     current.Next = tmp.Next;
-                    tmp.Next = Root;
-                    Root = tmp;
+                    tmp.Next = _root;
+                    _root = tmp;
                 }
 
-                Tail = current;
+                _tail = current;
             }
         }
 
         public void MergeSort(bool desc = false)
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
@@ -516,19 +516,19 @@ namespace LinkedList
             }
             else
             {
-                SinglyLinkedNode<T> current = Root;
-                Root = MergeSortUtil(current, desc);
+                SinglyLinkedNode<T> current = _root;
+                _root = MergeSortUtil(current, desc);
 
-                if (Root is not null)
+                if (_root is not null)
                 {
-                    SinglyLinkedNode<T> newTail = Root;
+                    SinglyLinkedNode<T> newTail = _root;
 
                     while (newTail.Next is not null)
                     {
                         newTail = newTail.Next;
                     }
 
-                    Tail = newTail;
+                    _tail = newTail;
                 }
                 else
                 {
@@ -539,19 +539,19 @@ namespace LinkedList
 
         public override string ToString()
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
             if (Length != 0)
             {
-                SinglyLinkedNode<T> current = Root;
+                SinglyLinkedNode<T> current = _root;
                 StringBuilder s = new StringBuilder(current.Value + " ");
 
                 while (current.Next is not null)
@@ -571,14 +571,14 @@ namespace LinkedList
 
         public override bool Equals(object? obj)
         {
-            if (Root is null || Tail is null)
+            if (_root is null || _tail is null)
             {
                 return false;
             }
    
             SinglyLinkedList<T>? list = obj as SinglyLinkedList<T>;
 
-            if (list is null || list.Root is null || list.Tail is null)
+            if (list is null || list._root is null || list._tail is null)
             {
                 return false;
             }
@@ -590,7 +590,7 @@ namespace LinkedList
 
             if (Length == 1 && list.Length == 1)
             {
-                if (this[0].Equals(list[0]))
+                if (_root.Value.Equals(_root.Value))
                 {
                     return true;
                 }
@@ -600,8 +600,8 @@ namespace LinkedList
                 }
             }
   
-            SinglyLinkedNode<T>? currentThis = Root;
-            SinglyLinkedNode<T>? currentList = list.Root;
+            SinglyLinkedNode<T>? currentThis = _root;
+            SinglyLinkedNode<T>? currentList = list._root;
 
             while (currentThis.Next is not null && currentList.Next is not null)
             {
@@ -624,12 +624,12 @@ namespace LinkedList
 
         private SinglyLinkedNode<T> GetNodeByIndex(int index)
         {
-            if (Root is null)
+            if (_root is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
 
-            if (Tail is null)
+            if (_tail is null)
             {
                 throw new Exception("The SinglyLinkedList is empty");
             }
@@ -639,7 +639,7 @@ namespace LinkedList
                 throw new IndexOutOfRangeException("The index is out of range");
             }
 
-            SinglyLinkedNode<T> current = Root;
+            SinglyLinkedNode<T> current = _root;
 
             for (int i = 1; i <= index && current.Next is not null; i++)
             {
