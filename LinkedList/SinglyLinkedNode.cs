@@ -4,12 +4,13 @@ using System.Text;
 
 namespace LinkedList
 {
-    internal class Node<T> where T : notnull, IComparable<T>, IEquatable<T>
+    public class SinglyLinkedNode<T> where T : notnull, IComparable<T>, IEquatable<T>
     {
         public T Value { get; set; }
-        public Node<T>? Next { get; set; }
 
-        public Node(T value)
+        internal SinglyLinkedNode<T>? Next { get; set; }
+
+        public SinglyLinkedNode(T value)
         {
             Value = value;
             Next = null;

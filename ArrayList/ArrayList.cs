@@ -172,6 +172,27 @@
             }
         }
 
+        public void RemoveAt(int index, int number)
+        {
+            if (Length == 0)
+            {
+                throw new ArgumentException("The ArrayList is empty");
+            }
+
+            if (index < 0 || index > Length)
+            {
+                throw new IndexOutOfRangeException("The index is out of range");
+            }
+
+            _array = ShiftToLeft(index, number);
+            Length -= number;
+
+            if (Length == (_array.Length / 2))
+            {
+                Downsize();
+            }
+        }
+
         public void RemoveByValue(T value)
         {
             if (Length == 0)
@@ -220,27 +241,6 @@
                     check = false;
                 }
             }
-
-            if (Length == (_array.Length / 2))
-            {
-                Downsize();
-            }
-        }
-
-        public void RemoveNumberOfElementsAt(int index, int number)
-        {
-            if (Length == 0)
-            {
-                throw new ArgumentException("The ArrayList is empty");
-            }
-
-            if (index < 0 || index > Length)
-            {
-                throw new IndexOutOfRangeException("The index is out of range");
-            }
-
-            _array = ShiftToLeft(index, number);
-            Length -= number;
 
             if (Length == (_array.Length / 2))
             {
@@ -391,7 +391,7 @@
                 return false;
             }
 
-            ArrayList<T> arrayList = (ArrayList<T>)obj;
+            ArrayList<T>? arrayList = obj as ArrayList<T>;
 
             if (arrayList is null)
             {
